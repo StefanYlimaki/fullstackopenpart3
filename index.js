@@ -62,7 +62,24 @@ const generateId = () => {
 
 app.post('/api/persons', (req, res) => {
     const body = req.body
-    console.log(body)
+
+    if(!body.name){
+        return res.status(400).json({
+            error: 'name missing'
+        })
+    } 
+
+    if(!body.number){
+        return res.status(400).json({
+            error: 'number missing'
+        })
+    } 
+
+    if(persons.find(person => body.name === person.name)){
+        return res.status(400).json({
+            error: `${body.name} already added`
+        })
+    } 
 
     const person = {
         name: body.name,
