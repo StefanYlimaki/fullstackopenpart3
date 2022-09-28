@@ -2,18 +2,47 @@ const mongoose = require('mongoose')
 
 const url = process.env.MONGODB_URI
 
-console.log('connecting to', url)
+console.log('connecting to mongoDB',)
 mongoose.connect(url)
-  .then(result => {
+  .then(() => {
     console.log('connected to MongoDB')
   })
   .catch((error) => {
     console.log('error connecting to MongoDB:', error.message)
   })
 
+const constainsOnlyNumbers = (str) => {
+  return /^\d+$/.test(str)
+}
+
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    validate: {
+      validator: function (val) {
+        const parts = val.split('-')
+        if(parts.length > 2) {
+          return false
+        }
+        const first = parts[0]
+        const second = parts[1]
+        if(constainsOnlyNumbers(first) && constainsOnlyNumbers(second)) {
+          if(first.length >= 2 && first.length <=3) {
+            if(second.length >= 5 && second.length <= 10) {
+              return true
+            }
+          }
+        }
+        return false
+      }, message: 'the new number is invalid'
+    }
+  },
   date: Date,
 })
 
